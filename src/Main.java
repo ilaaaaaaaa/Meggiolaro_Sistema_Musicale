@@ -9,13 +9,13 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         Database db = null;
 
-    /*    try {
+        try {
             db = Database.getInstance();
         } catch (SQLException e) {
             System.out.println("Errore di connessione al database!");
             return;
         }
-    */
+
         int scelta = -1;
         while (scelta != 0) {
             // MENU' DEL SISTEMA MUSICALE
@@ -61,11 +61,20 @@ public class Main {
                 String inputNome = sc.nextLine();
 
                 Artista trovato = apiClient.cercaArtista(inputNome);
-                if (trovato != null)
+                if (trovato != null) {
                     trovato.informazioniArtista();
-                else
-                    System.out.println("Nessun artista trovato.");
 
+                    System.out.print("Vuoi salvare questo artista nella tua collezione? (s/n): ");
+                    String risposta = sc.nextLine();
+                    if (risposta.equalsIgnoreCase("s")) {
+                        if (db.salvaArtista(trovato))
+                            System.out.println("Artista salvato nella collezione locale!");
+                        else
+                            System.out.println("Errore durante il salvataggio.");
+                    }
+                }else {
+                    System.out.println("Nessun artista trovato.");
+                }
             } else if (scelta == 5) {
                 System.out.println("\nInserisci i dati del nuovo artista");
 
@@ -104,7 +113,16 @@ public class Main {
                 }
 
             } else if (scelta == 7) {
-                // Implementerai dopo
+                List<Artista> collezione = db.getCollezione();
+                if (collezione.isEmpty()) {
+                    System.out.println("La tua collezione è vuota.");
+                } else {
+                    System.out.println("\nLa tua collezione personale:");
+                    for (Artista a : collezione) {
+                        a.informazioniArtista();
+                        System.out.println("-----------------------------");
+                    }
+                }
             } else if (scelta == 0) {
                 System.out.println("Uscita dal programma...");
             } else {
